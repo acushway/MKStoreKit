@@ -142,7 +142,7 @@ static NSMutableData *sDataFromConnection;
     
     NSString *uniqueID = [self deviceId];
     // check udid and featureid with developer's server
-		
+
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", OWN_SERVER, @"featureCheck.php"]];
     
     NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url 
@@ -154,7 +154,7 @@ static NSMutableData *sDataFromConnection;
     
     NSString *postData = [NSString stringWithFormat:@"productid=%@&udid=%@", productId, uniqueID];
     
-    NSString *length = [NSString stringWithFormat:@"%d", [postData length]];	
+    NSString *length = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     [theRequest setValue:length forHTTPHeaderField:@"Content-Length"];	
     
     [theRequest setHTTPBody:[postData dataUsingEncoding:NSASCIIStringEncoding]];
@@ -187,7 +187,7 @@ static NSMutableData *sDataFromConnection;
   
 	NSString *postData = [NSString stringWithFormat:@"receiptdata=%@", receiptDataString];
 	
-	NSString *length = [NSString stringWithFormat:@"%d", [postData length]];	
+	NSString *length = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
 	[theRequest setValue:length forHTTPHeaderField:@"Content-Length"];	
 	
 	[theRequest setHTTPBody:[postData dataUsingEncoding:NSASCIIStringEncoding]];

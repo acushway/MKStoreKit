@@ -276,7 +276,7 @@ static MKStoreManager* _sharedStoreManager;
 - (BOOL) removeAllKeychainData {
   
   NSMutableArray *productsArray = [MKStoreManager allProducts];
-  int itemCount = productsArray.count;
+  NSInteger itemCount = productsArray.count;
   NSError *error;
   
   //loop through all the saved keychain data and remove it
@@ -466,7 +466,7 @@ static MKStoreManager* _sharedStoreManager;
   if ([SKPaymentQueue canMakePayments])
 	{
     NSArray *allIds = [self.purchasableObjects valueForKey:@"productIdentifier"];
-    int index = [allIds indexOfObject:productId];
+    NSInteger index = [allIds indexOfObject:productId];
     
     if(index == NSNotFound) return;
     
