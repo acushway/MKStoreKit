@@ -37,17 +37,7 @@
 #import <StoreKit/StoreKit.h>
 #import "MKStoreKitConfigs.h"
 
-#define kReceiptStringKey @"MK_STOREKIT_RECEIPTS_STRING"
-
-#ifndef NDEBUG
-#define kReceiptValidationURL @"https://sandbox.itunes.apple.com/verifyReceipt"
-#else
-#define kReceiptValidationURL @"https://buy.itunes.apple.com/verifyReceipt"
-#endif
-
 #define kProductFetchedNotification @"MKStoreKitProductsFetched"
-#define kSubscriptionsPurchasedNotification @"MKStoreKitSubscriptionsPurchased"
-#define kSubscriptionsInvalidNotification @"MKStoreKitSubscriptionsInvalid"
 
 @interface MKStoreManager : NSObject<SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
@@ -58,11 +48,6 @@
 + (BOOL) isFeaturePurchased:(NSString*) featureId;
 
 @property (nonatomic, strong) NSMutableArray *purchasableObjects;
-@property (nonatomic, strong) NSMutableDictionary *subscriptionProducts;
-#ifdef __IPHONE_6_0
-@property (strong, nonatomic) NSMutableArray *hostedContents;
-@property (nonatomic, copy) void (^hostedContentDownloadStatusChangedHandler)(NSArray* hostedContent);
-#endif
 // convenience methods
 //returns a dictionary with all prices for identifiers
 - (NSMutableDictionary *)pricesDictionary;
@@ -73,6 +58,13 @@
          onComplete:(void (^)(NSString* purchasedFeature, NSData*purchasedReceipt, NSArray* availableDownloads)) completionBlock
         onCancelled:(void (^)(void)) cancelBlock;
 
+// use this method to start a purchase
+- (void) buyFeature:(NSString*) featureId
+         onComplete:(void (^)(NSString* purchasedFeature, NSData*purchasedReceipt, NSArray* availableDownloads)) completionBlock
+        onCancelled:(void (^)(void)) cancelBlock
+        onDeferred:(void (^)(void)) deferredBlock
+        onError:(void (^)(void)) errorBlock;
+
 // use this method to restore a purchase
 - (void) restorePreviousTransactionsOnComplete:(void (^)(void)) completionBlock
                                        onError:(void (^)(NSError* error)) errorBlock;
@@ -80,7 +72,6 @@
 // For consumable support
 - (BOOL) canConsumeProduct:(NSString*) productName quantity:(int) quantity;
 - (BOOL) consumeProduct:(NSString*) productName quantity:(int) quantity;
-- (BOOL) isSubscriptionActive:(NSString*) featureId;
 
 // for testing proposes you can use this method to remove all the saved keychain data (saved purchases, etc.)
 - (BOOL) removeAllKeychainData;
