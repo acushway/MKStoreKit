@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CAMKStoreKit"
-  s.version      = "5.0.2"
+  s.version      = "5.0.3"
   s.summary      = "My fork of MKStoreKit"
 
   s.description  = <<-DESC
