@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CAMKStoreKit"
-  s.version      = "5.0.3"
+  s.version      = "5.0.4"
   s.summary      = "My fork of MKStoreKit"
 
   s.description  = <<-DESC
@@ -16,14 +16,14 @@ Pod::Spec.new do |s|
   
   s.author             = { "Alan Cushway" => "acushway@hotmail.com" }
 
-  s.platform     = :ios, "6.0"
+  s.platform     = :ios, "7.0"
 
   s.source       = { :git => "https://github.com/acushway/MKStoreKit.git", :tag => s.version.to_s }
 
   s.source_files  = "*.{h,m}", "**/*.{h,m}"
   s.exclude_files = ".gitignore", "MKStoreKitConfigs.plist", "README.mdown"
 
-  s.public_header_files = "./*.h"
+  s.public_header_files = "*.h"
 
   s.framework  = "StoreKit"
 
