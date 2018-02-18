@@ -41,20 +41,20 @@
 
 @interface MKStoreManager () //private methods and properties
 
-@property (nonatomic, copy) void (^onTransactionCancelled)();
-@property (nonatomic, copy) void (^onBuyError)();
-@property (nonatomic, copy) void (^onTransactionCompleted)(NSString *productId, NSData* receiptData, NSArray* downloads);
-@property (nonatomic, copy) void (^onDeferred)();
+@property (nonatomic, copy) void (^onTransactionCancelled)(void);
+@property (nonatomic, copy) void (^onBuyError)(void);
+@property (nonatomic, copy) void (^onTransactionCompleted)(NSString *productId, NSArray* downloads);
+@property (nonatomic, copy) void (^onDeferred)(void);
 
 @property (nonatomic, copy) void (^onRestoreFailed)(NSError* error);
-@property (nonatomic, copy) void (^onRestoreCompleted)();
+@property (nonatomic, copy) void (^onRestoreCompleted)(void);
 
 @property (nonatomic, assign, getter=isProductsAvailable) BOOL isProductsAvailable;
 
 @property (nonatomic, strong) SKProductsRequest *productsRequest;
 
 - (void)requestProductData;
-- (void)rememberPurchaseOfProduct:(NSString*) productIdentifier withReceipt:(NSData*) receiptData;
+- (void)rememberPurchaseOfProduct:(NSString*) productIdentifier;
 - (void)addToQueue:(NSString*) productId;
 @end
 
@@ -133,16 +133,6 @@ static MKStoreManager* _sharedStoreManager;
             [[NSUbiquitousKeyValueStore defaultStore] synchronize];
         }
     }
-}
-
-+ (id)receiptForKey:(NSString*)key
-{
-
-    NSData *receipt = [MKStoreManager objectForKey:key];
-    if(!receipt)
-        receipt = [MKStoreManager objectForKey:[NSString stringWithFormat:@"%@-receipt", key]];
-
-    return receipt;
 }
 
 + (id)objectForKey:(NSString*)key
@@ -383,14 +373,14 @@ static MKStoreManager* _sharedStoreManager;
 }
 
 - (void)buyFeature:(NSString*) featureId
-        onComplete:(void (^)(NSString*, NSData*, NSArray*)) completionBlock
+        onComplete:(void (^)(NSString*, NSArray*)) completionBlock
        onCancelled:(void (^)(void)) cancelBlock
 {
     [self buyFeature:featureId onComplete:completionBlock onCancelled:cancelBlock onDeferred:nil onError:nil];
 }
 
 - (void)buyFeature:(NSString*) featureId
-        onComplete:(void (^)(NSString* purchasedFeature, NSData*purchasedReceipt, NSArray* availableDownloads)) completionBlock
+        onComplete:(void (^)(NSString* purchasedFeature, NSArray* availableDownloads)) completionBlock
        onCancelled:(void (^)(void)) cancelBlock
         onDeferred:(void (^)(void)) deferredBlock
            onError:(void (^)(void)) errorBlock
@@ -455,24 +445,15 @@ static MKStoreManager* _sharedStoreManager;
 #pragma mark In-App purchases callbacks
 // In most cases you don't have to touch these methods
 - (void)provideContent: (NSString*) productIdentifier
-            forReceipt:(NSData*) receiptData
          hostedContent:(NSArray*) hostedContent
 {
-    if(!receiptData) {
-        if(self.onTransactionCancelled) {
-            self.onTransactionCancelled(productIdentifier);
-        } else {
-            NSLog(@"Receipt invalid");
-        }
-    }
-
-    [self rememberPurchaseOfProduct:productIdentifier withReceipt:receiptData];
+    [self rememberPurchaseOfProduct:productIdentifier];
     if(self.onTransactionCompleted) {
-        self.onTransactionCompleted(productIdentifier, receiptData, hostedContent);
+        self.onTransactionCompleted(productIdentifier, hostedContent);
     }
 }
 
-- (void)rememberPurchaseOfProduct:(NSString*) productIdentifier withReceipt:(NSData*) receiptData
+- (void)rememberPurchaseOfProduct:(NSString*) productIdentifier
 {
     NSDictionary *allConsumables = [[MKStoreManager storeKitItems] objectForKey:@"Consumables"];
     if([[allConsumables allKeys] containsObject:productIdentifier]) {
@@ -487,8 +468,6 @@ static MKStoreManager* _sharedStoreManager;
     } else {
         [MKStoreManager setObject:[NSNumber numberWithBool:YES] forKey:productIdentifier];
     }
-
-    [MKStoreManager setObject:receiptData forKey:[NSString stringWithFormat:@"%@-receipt", productIdentifier]];
 }
 
 #pragma -
@@ -566,7 +545,6 @@ static MKStoreManager* _sharedStoreManager;
     }
 
     [self provideContent:transaction.payment.productIdentifier
-              forReceipt:transaction.transactionReceipt
            hostedContent:downloads];
 
     [[SKPaymentQueue defaultQueue] finishTransaction: transaction];
@@ -589,7 +567,6 @@ static MKStoreManager* _sharedStoreManager;
     }
 
     [self provideContent: transaction.originalTransaction.payment.productIdentifier
-              forReceipt:transaction.transactionReceipt
            hostedContent:downloads];
     
     [[SKPaymentQueue defaultQueue] finishTransaction: transaction];

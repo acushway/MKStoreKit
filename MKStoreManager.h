@@ -55,12 +55,12 @@
 
 // use this method to start a purchase
 - (void) buyFeature:(NSString*) featureId
-         onComplete:(void (^)(NSString* purchasedFeature, NSData*purchasedReceipt, NSArray* availableDownloads)) completionBlock
+         onComplete:(void (^)(NSString* purchasedFeature, NSArray* availableDownloads)) completionBlock
         onCancelled:(void (^)(void)) cancelBlock;
 
 // use this method to start a purchase
 - (void) buyFeature:(NSString*) featureId
-         onComplete:(void (^)(NSString* purchasedFeature, NSData*purchasedReceipt, NSArray* availableDownloads)) completionBlock
+         onComplete:(void (^)(NSString* purchasedFeature, NSArray* availableDownloads)) completionBlock
         onCancelled:(void (^)(void)) cancelBlock
         onDeferred:(void (^)(void)) deferredBlock
         onError:(void (^)(void)) errorBlock;
@@ -76,9 +76,6 @@
 // for testing proposes you can use this method to remove all the saved keychain data (saved purchases, etc.)
 - (BOOL) removeAllKeychainData;
 
-// You wont' need this normally. MKStoreKit automatically takes care of remembering receipts.
-// but in case you want the receipt data to be posted to your server, use this.
-+(id) receiptForKey:(NSString*) key;
 +(void) setObject:(id) object forKey:(NSString*) key;
 +(NSNumber*) numberForKey:(NSString*) key;
 
