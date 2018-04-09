@@ -62,45 +62,6 @@
 
 static MKStoreManager* _sharedStoreManager;
 
-+ (void)updateFromiCloud:(NSNotification*) notificationObject
-{
-
-    NSLog(@"Updating from iCloud");
-
-    NSUbiquitousKeyValueStore *iCloudStore = [NSUbiquitousKeyValueStore defaultStore];
-    NSDictionary *dict = [iCloudStore dictionaryRepresentation];
-    NSMutableArray *products = [self allProducts];
-
-    [products enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-
-        id valueFromiCloud = [dict objectForKey:obj];
-
-        if(valueFromiCloud) {
-            NSError *error = nil;
-            [SFHFKeychainUtils storeUsername:obj
-                                 andPassword:valueFromiCloud
-                              forServiceName:@"MKStoreKit"
-                              updateExisting:YES
-                                       error:&error];
-            if(error) NSLog(@"%@", error);
-        }
-    }];
-}
-
-+ (BOOL)iCloudAvailable
-{
-
-    if(NSClassFromString(@"NSUbiquitousKeyValueStore")) { // is iOS 5?
-
-        if([NSUbiquitousKeyValueStore defaultStore]) {  // is iCloud enabled
-
-            return YES;
-        }
-    }
-
-    return NO;
-}
-
 + (void)setObject:(id)object forKey:(NSString*)key
 {
     if (object) {
@@ -118,20 +79,10 @@ static MKStoreManager* _sharedStoreManager;
         [SFHFKeychainUtils storeUsername:key andPassword:objectString forServiceName:@"MKStoreKit" updateExisting:YES error:&error];
         if(error) NSLog(@"%@", error);
 
-        if([self iCloudAvailable]) {
-            [[NSUbiquitousKeyValueStore defaultStore] setObject:objectString forKey:key];
-            [[NSUbiquitousKeyValueStore defaultStore] synchronize];
-        }
     } else {
-
         NSError *error = nil;
         [SFHFKeychainUtils deleteItemForUsername:key andServiceName:@"MKStoreKit" error:&error];
         if(error) NSLog(@"%@", error);
-
-        if([self iCloudAvailable]) {
-            [[NSUbiquitousKeyValueStore defaultStore] removeObjectForKey:key];
-            [[NSUbiquitousKeyValueStore defaultStore] synchronize];
-        }
     }
 }
 
@@ -167,14 +118,6 @@ static MKStoreManager* _sharedStoreManager;
             [_sharedStoreManager requestProductData];
             [[SKPaymentQueue defaultQueue] addTransactionObserver:_sharedStoreManager];
         });
-
-        if([self iCloudAvailable])
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(updateFromiCloud:)
-                                                         name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
-                                                       object:nil];
-
-
     }
     return _sharedStoreManager;
 }
