@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CAMKStoreKit"
-  s.version      = "5.0.10"
+  s.version      = "5.0.11"
   s.summary      = "My fork of MKStoreKit"
 
   s.description  = <<-DESC
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   
   s.author             = { "Alan Cushway" => "acushway@hotmail.com" }
 
-  s.platform     = :ios, "11.0"
+  s.platform     = :ios, "15.0"
 
   s.source       = { :git => "https://github.com/acushway/MKStoreKit.git", :tag => s.version.to_s }
 
